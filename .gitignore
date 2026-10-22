@@ -1,0 +1,19 @@
+# Compilados de Maven
+target/
+
+# Archivos de la base de datos H2 (se crean al ejecutar)
+data/
+*.db
+
+# Editores
+.vscode/
+.idea/
+*.iml
+.classpath
+.project
+.settings/
+.factorypath
+
+# Sistema operativo
+.DS_Store
+Thumbs.db

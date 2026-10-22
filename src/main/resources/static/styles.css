@@ -1,0 +1,368 @@
+/* =========================================================
+   Libreta de avistamientos: estilos
+   Los colores y tipografías están en variables (:root),
+   así se cambia todo el aspecto editando solo esa parte.
+   ========================================================= */
+
+:root {
+  --papel: #f5f7f1;        /* fondo, como hoja de libreta */
+  --hoja: #ffffff;         /* fondo de los paneles */
+  --tinta: #1f2a24;        /* texto principal */
+  --tinta-suave: #5b6760;  /* texto secundario */
+  --musgo: #45603d;        /* color principal (botones, enlaces) */
+  --musgo-oscuro: #33492d;
+  --turpial: #f0b323;      /* acento amarillo para el conteo */
+  --linea: #d9dfd3;        /* bordes y renglones */
+  --error: #a93a26;
+
+  --fuente-titulos: "Alegreya", Georgia, "Times New Roman", serif;
+  --fuente-texto: "Alegreya Sans", "Segoe UI", Roboto, Arial, sans-serif;
+
+  --radio: 6px;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--papel);
+  color: var(--tinta);
+  font-family: var(--fuente-texto);
+  font-size: 1.0625rem;
+  line-height: 1.5;
+}
+
+h1,
+h2 {
+  font-family: var(--fuente-titulos);
+  font-weight: 700;
+  line-height: 1.15;
+  margin: 0;
+}
+
+a {
+  color: var(--musgo);
+}
+
+/* ---------- Encabezado ---------- */
+
+.encabezado {
+  max-width: 72rem;
+  margin: 0 auto;
+  padding: 2.5rem 1.5rem 1.5rem;
+}
+
+.encabezado h1 {
+  font-size: clamp(2rem, 5vw, 3rem);
+}
+
+.encabezado p {
+  margin: 0.5rem 0 0;
+  color: var(--tinta-suave);
+  max-width: 40rem;
+}
+
+/* ---------- Distribución en dos columnas ---------- */
+
+.contenido {
+  max-width: 72rem;
+  margin: 0 auto;
+  padding: 0 1.5rem 3rem;
+  display: grid;
+  grid-template-columns: 20rem 1fr;
+  gap: 1.5rem;
+  align-items: start;
+}
+
+.columna-datos {
+  display: grid;
+  gap: 1.5rem;
+  min-width: 0; /* evita que la tabla ancha desborde la columna */
+}
+
+.panel-formulario,
+.panel-conteo,
+.panel-registro {
+  background: var(--hoja);
+  border: 1px solid var(--linea);
+  border-radius: var(--radio);
+  padding: 1.5rem;
+}
+
+.panel-formulario {
+  position: sticky;
+  top: 1.5rem;
+}
+
+section h2 {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+/* ---------- Formulario ---------- */
+
+.campo {
+  margin-bottom: 0.75rem;
+}
+
+label {
+  display: block;
+  font-weight: 500;
+  margin-bottom: 0.25rem;
+}
+
+input {
+  width: 100%;
+  padding: 0.55rem 0.7rem;
+  font: inherit;
+  color: var(--tinta);
+  background: var(--papel);
+  border: 1px solid var(--linea);
+  border-radius: var(--radio);
+}
+
+input:focus-visible {
+  outline: 2px solid var(--musgo);
+  outline-offset: 1px;
+  background: var(--hoja);
+}
+
+input[aria-invalid="true"] {
+  border-color: var(--error);
+}
+
+.error-campo {
+  margin: 0.25rem 0 0;
+  min-height: 1.2em;
+  font-size: 0.9rem;
+  color: var(--error);
+}
+
+.acciones-formulario {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.boton {
+  font: inherit;
+  font-weight: 500;
+  padding: 0.55rem 1rem;
+  border-radius: var(--radio);
+  border: 1px solid transparent;
+  cursor: pointer;
+}
+
+.boton:focus-visible {
+  outline: 2px solid var(--tinta);
+  outline-offset: 2px;
+}
+
+.boton-principal {
+  background: var(--musgo);
+  color: #fff;
+}
+
+.boton-principal:hover {
+  background: var(--musgo-oscuro);
+}
+
+.boton-secundario {
+  background: transparent;
+  color: var(--tinta);
+  border-color: var(--linea);
+}
+
+.boton-secundario:hover {
+  border-color: var(--tinta-suave);
+}
+
+.mensaje {
+  margin: 1rem 0 0;
+  min-height: 1.5em;
+  color: var(--musgo);
+  font-weight: 500;
+}
+
+.mensaje.es-error {
+  color: var(--error);
+}
+
+/* ---------- Conteo por especie (marcas de conteo) ---------- */
+
+.conteo {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.conteo li {
+  display: grid;
+  grid-template-columns: minmax(8rem, 12rem) 1fr auto;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.6rem 0;
+  border-bottom: 1px solid var(--linea);
+}
+
+.conteo li:last-child {
+  border-bottom: none;
+}
+
+.conteo .nombre-especie {
+  font-family: var(--fuente-titulos);
+  font-size: 1.15rem;
+}
+
+.conteo .cantidad {
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Las marcas: grupos de hasta 5 rayas, la quinta cruza a las otras cuatro */
+.marcas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.grupo {
+  position: relative;
+  display: inline-flex;
+  gap: 5px;
+  height: 1.6rem;
+  padding: 0 3px;
+}
+
+.raya {
+  width: 3px;
+  height: 100%;
+  background: var(--tinta);
+  border-radius: 2px;
+}
+
+/* La raya diagonal amarilla que "cierra" un grupo de cinco */
+.grupo.completo::after {
+  content: "";
+  position: absolute;
+  left: -3px;
+  right: -3px;
+  top: 50%;
+  height: 3px;
+  background: var(--turpial);
+  border-radius: 2px;
+  transform: rotate(-28deg);
+}
+
+.conteo-vacio {
+  color: var(--tinta-suave);
+}
+
+/* ---------- Tabla del registro ---------- */
+
+.tabla-contenedor {
+  overflow-x: auto;
+}
+
+.tabla {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.tabla th,
+.tabla td {
+  text-align: left;
+  padding: 0.6rem 0.5rem;
+  border-bottom: 1px solid var(--linea);
+  vertical-align: top;
+}
+
+.tabla th {
+  font-weight: 500;
+  color: var(--tinta-suave);
+  font-size: 0.95rem;
+}
+
+.tabla td:first-child {
+  color: var(--tinta-suave);
+  font-variant-numeric: tabular-nums;
+}
+
+.tabla .celda-especie {
+  font-family: var(--fuente-titulos);
+  font-size: 1.1rem;
+}
+
+.tabla .celda-fecha {
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.tabla .celda-acciones {
+  white-space: nowrap;
+  text-align: right;
+}
+
+.tabla tr.en-edicion td {
+  background: #fdf3d7;
+}
+
+.boton-tabla {
+  font: inherit;
+  font-size: 0.95rem;
+  background: none;
+  border: none;
+  padding: 0.2rem 0.4rem;
+  color: var(--musgo);
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.boton-tabla.peligro {
+  color: var(--error);
+}
+
+.boton-tabla:focus-visible {
+  outline: 2px solid var(--tinta);
+  border-radius: 3px;
+}
+
+.vacio {
+  color: var(--tinta-suave);
+  margin: 1rem 0 0;
+}
+
+.solo-lector {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* ---------- Pantallas pequeñas: una sola columna ---------- */
+
+@media (max-width: 52rem) {
+  .contenido {
+    grid-template-columns: 1fr;
+  }
+
+  .panel-formulario {
+    position: static;
+  }
+
+  .conteo li {
+    grid-template-columns: 1fr auto;
+  }
+
+  .conteo .marcas {
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
+}

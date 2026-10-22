@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Libreta de avistamientos</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Alegreya:wght@500;700&family=Alegreya+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <header class="encabezado">
+    <h1>Libreta de avistamientos</h1>
+    <p>Registra las aves que ves en el campo. Esta página usa la API en
+      <a href="/avistamientos">/avistamientos</a>.</p>
+  </header>
+
+  <main class="contenido">
+
+    <!-- Formulario: sirve para registrar (POST) y para editar (PUT) -->
+    <section class="panel-formulario" aria-labelledby="titulo-formulario">
+      <h2 id="titulo-formulario">Nuevo avistamiento</h2>
+
+      <form id="formulario" novalidate>
+        <div class="campo">
+          <label for="especie">Especie</label>
+          <input id="especie" name="especie" type="text" placeholder="colibrí" autocomplete="off">
+          <p class="error-campo" data-error="especie"></p>
+        </div>
+
+        <div class="campo">
+          <label for="lugar">Lugar</label>
+          <input id="lugar" name="lugar" type="text" placeholder="Humedal Juan Amarillo" autocomplete="off">
+          <p class="error-campo" data-error="lugar"></p>
+        </div>
+
+        <div class="campo">
+          <label for="fecha">Fecha</label>
+          <input id="fecha" name="fecha" type="date">
+          <p class="error-campo" data-error="fecha"></p>
+        </div>
+
+        <div class="campo">
+          <label for="observador">Observador</label>
+          <input id="observador" name="observador" type="text" placeholder="Tu nombre" autocomplete="name">
+          <p class="error-campo" data-error="observador"></p>
+        </div>
+
+        <div class="acciones-formulario">
+          <button type="submit" id="boton-guardar" class="boton boton-principal">Registrar avistamiento</button>
+          <button type="button" id="boton-cancelar" class="boton boton-secundario" hidden>Cancelar edición</button>
+        </div>
+      </form>
+
+      <p id="mensaje" class="mensaje" role="status" aria-live="polite"></p>
+    </section>
+
+    <div class="columna-datos">
+
+      <!-- Resumen por especie (bonus), dibujado como marcas de conteo -->
+      <section class="panel-conteo" aria-labelledby="titulo-conteo">
+        <h2 id="titulo-conteo">Conteo por especie</h2>
+        <ul id="conteo" class="conteo"></ul>
+      </section>
+
+      <!-- Lista de avistamientos -->
+      <section class="panel-registro" aria-labelledby="titulo-registro">
+        <h2 id="titulo-registro">Registro</h2>
+        <div class="tabla-contenedor">
+          <table class="tabla">
+            <thead>
+              <tr>
+                <th scope="col">#</th>
+                <th scope="col">Fecha</th>
+                <th scope="col">Especie</th>
+                <th scope="col">Lugar</th>
+                <th scope="col">Observador</th>
+                <th scope="col"><span class="solo-lector">Acciones</span></th>
+              </tr>
+            </thead>
+            <tbody id="filas"></tbody>
+          </table>
+        </div>
+        <p id="vacio" class="vacio" hidden>Todavía no hay avistamientos. Registra el primero con el formulario.</p>
+      </section>
+
+    </div>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>

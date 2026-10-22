@@ -1,0 +1,4 @@
+# El script de Linux/Mac debe conservar saltos de línea LF y el de Windows CRLF,
+# si no, mvnw deja de funcionar al clonar en otro sistema operativo.
+mvnw text eol=lf
+*.cmd text eol=crlf
