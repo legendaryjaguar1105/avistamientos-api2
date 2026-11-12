@@ -1,4 +1,4 @@
-package com.isw2.avistamientos.exception;
+package com.isw2.avistamientos.dominio;
 
 import java.util.Map;
 

@@ -1,5 +1,7 @@
 package com.isw2.avistamientos.exception;
 
+import com.isw2.avistamientos.dominio.AvistamientoInvalidoException;
+import com.isw2.avistamientos.dominio.AvistamientoNoEncontradoException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;

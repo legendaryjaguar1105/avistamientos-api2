@@ -1,11 +1,11 @@
 package com.isw2.avistamientos.controller;
 
 import com.isw2.avistamientos.dto.ResumenEspecie;
-import com.isw2.avistamientos.exception.AvistamientoNoEncontradoException;
+import com.isw2.avistamientos.dominio.AvistamientoNoEncontradoException;
 import com.isw2.avistamientos.model.Avistamiento;
 import com.isw2.avistamientos.repository.AvistamientoRepository;
-import com.isw2.avistamientos.validation.ValidadorDeAvistamiento;
-import com.isw2.avistamientos.exception.AvistamientoInvalidoException;
+import com.isw2.avistamientos.dominio.ValidadorDeAvistamiento;
+import com.isw2.avistamientos.dominio.AvistamientoInvalidoException;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;

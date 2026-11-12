@@ -1,4 +1,4 @@
-package com.isw2.avistamientos.exception;
+package com.isw2.avistamientos.dominio;
 
 /** Se lanza cuando piden un id que no existe. El manejador global la convierte en un 404. */
 public class AvistamientoNoEncontradoException extends RuntimeException {
