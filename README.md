@@ -190,20 +190,30 @@ El proyecto tiene pruebas de integración en `src/test/java` que levantan la apl
 
 ## Estructura del proyecto
 
+El código sigue la **arquitectura hexagonal (puertos y adaptadores)**. El detalle y el diagrama están en [`docs/TALLER5_CLEAN_ARCHITECTURE.md`](docs/TALLER5_CLEAN_ARCHITECTURE.md).
+
 ```
 src/main/java/com/isw2/avistamientos/
-├── AvistamientosApplication.java      Punto de entrada (main)
-├── DatosDeEjemplo.java                Carga datos de ejemplo si la base está vacía
-├── model/Avistamiento.java            El recurso (entidad JPA + validaciones)
-├── repository/AvistamientoRepository  Acceso a la base de datos H2
-├── controller/AvistamientoController  Los endpoints REST
-├── dto/ResumenEspecie.java            Fila del resumen por especie
-└── exception/                         Manejo de errores 400, 404 y 415 en JSON
+├── AvistamientosApplication.java          Punto de entrada (main)
+├── dominio/                               ── DENTRO del hexágono: Java puro, sin Spring ──
+│   ├── Avistamiento.java                  El avistamiento como lo entiende el negocio
+│   ├── ResumenEspecie.java                Conteo por especie
+│   ├── ValidadorDeAvistamiento.java       Regla de negocio (fecha no futura, longitudes)
+│   └── Avistamiento*Exception.java        Errores de negocio (inválido, no encontrado)
+├── aplicacion/
+│   ├── puerto/entrada/GestionarAvistamientos.java       Puerto primario: lo que ofrece la app
+│   ├── puerto/salida/RepositorioDeAvistamientos.java    Puerto secundario: lo que necesita
+│   └── ServicioDeAvistamientos.java       Implementa el puerto de entrada con el de salida
+├── adaptador/                             ── FUERA del hexágono: tecnologías ──
+│   ├── entrada/web/                       REST: controlador, DTOs JSON, errores 400/404/415
+│   ├── entrada/arranque/DatosDeEjemplo    Carga datos de ejemplo usando el puerto de entrada
+│   └── salida/persistencia/               JPA + H2: entidad, Spring Data y el adaptador
+└── configuracion/ConfiguracionHexagonal   Conecta el servicio con el adaptador de salida
 src/main/resources/
-├── application.properties             Configuración (puerto, H2, JPA)
-└── static/                            Página web (index.html, styles.css, app.js)
-src/test/java/                         Pruebas de integración
-ejemplos/                              JSON de ejemplo para los curl
+├── application.properties                 Configuración (puerto, H2, JPA)
+└── static/                                Página web (index.html, styles.css, app.js)
+src/test/java/                             Pruebas de integración y unitarias
+ejemplos/                                  JSON de ejemplo para los curl
 ```
 
 ## Uso de IA
