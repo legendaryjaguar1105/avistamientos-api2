@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ValidadorDeAvistamiento.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">avistamientos-api</a> &gt; <a href="index.source.html" class="el_package">com.isw2.avistamientos.validation</a> &gt; <span class="el_source">ValidadorDeAvistamiento.java</span></div><h1>ValidadorDeAvistamiento.java</h1><pre class="source lang-java linenums">package com.isw2.avistamientos.validation;
+
+import com.isw2.avistamientos.model.Avistamiento;
+import java.time.Clock;
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
+/** Valida las reglas de negocio sin depender del controlador ni de la base de datos. */
+public class ValidadorDeAvistamiento {
+    private final Clock reloj;
+
+    /** En producción usa el reloj del sistema; en pruebas se puede inyectar un reloj fijo. */
+<span class="fc" id="L15">    public ValidadorDeAvistamiento() { this(Clock.systemDefaultZone()); }</span>
+<span class="fc" id="L16">    public ValidadorDeAvistamiento(Clock reloj) { this.reloj = reloj; }</span>
+
+    /** Devuelve los errores por campo; un mapa vacío significa que el registro es válido. */
+    public Map&lt;String, String&gt; validar(Avistamiento a) {
+<span class="fc" id="L20">        Map&lt;String, String&gt; errores = new LinkedHashMap&lt;&gt;();</span>
+<span class="pc bpc" id="L21" title="1 of 2 branches missed.">        if (a == null) { errores.put(&quot;avistamiento&quot;, &quot;El avistamiento es obligatorio&quot;); return errores; }</span>
+<span class="fc" id="L22">        String especie = a.getEspecie();</span>
+<span class="pc bpc" id="L23" title="1 of 6 branches missed.">        if (especie == null || especie.trim().length() &lt; 3 || especie.trim().length() &gt; 50)</span>
+<span class="fc" id="L24">            errores.put(&quot;especie&quot;, &quot;La especie debe tener entre 3 y 50 caracteres&quot;);</span>
+<span class="pc bpc" id="L25" title="1 of 4 branches missed.">        if (a.getLugar() == null || a.getLugar().isBlank())</span>
+<span class="fc" id="L26">            errores.put(&quot;lugar&quot;, &quot;El lugar no puede estar vacío&quot;);</span>
+<span class="pc bpc" id="L27" title="1 of 4 branches missed.">        if (a.getObservador() == null || a.getObservador().isBlank())</span>
+<span class="fc" id="L28">            errores.put(&quot;observador&quot;, &quot;El observador no puede estar vacío&quot;);</span>
+<span class="fc" id="L29">        String fecha = a.getFecha();</span>
+<span class="pc bpc" id="L30" title="1 of 4 branches missed.">        if (fecha == null || !fecha.matches(&quot;^\\d{4}-\\d{2}-\\d{2}$&quot;)) {</span>
+<span class="fc" id="L31">            errores.put(&quot;fecha&quot;, &quot;La fecha debe tener el formato AAAA-MM-DD&quot;);</span>
+        } else {
+            try {
+<span class="fc" id="L34">                LocalDate fechaParseada = LocalDate.parse(fecha);</span>
+<span class="fc bfc" id="L35" title="All 2 branches covered.">                if (fechaParseada.isAfter(LocalDate.now(reloj)))</span>
+<span class="fc" id="L36">                    errores.put(&quot;fecha&quot;, &quot;La fecha no puede ser posterior a hoy&quot;);</span>
+<span class="fc" id="L37">            } catch (DateTimeParseException ex) {</span>
+<span class="fc" id="L38">                errores.put(&quot;fecha&quot;, &quot;La fecha no es una fecha válida del calendario&quot;);</span>
+<span class="fc" id="L39">            }</span>
+        }
+<span class="fc" id="L41">        return errores;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

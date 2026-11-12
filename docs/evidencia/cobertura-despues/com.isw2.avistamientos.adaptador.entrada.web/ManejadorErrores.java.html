@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ManejadorErrores.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">avistamientos-api</a> &gt; <a href="index.source.html" class="el_package">com.isw2.avistamientos.adaptador.entrada.web</a> &gt; <span class="el_source">ManejadorErrores.java</span></div><h1>ManejadorErrores.java</h1><pre class="source lang-java linenums">package com.isw2.avistamientos.adaptador.entrada.web;
+
+import com.isw2.avistamientos.dominio.AvistamientoInvalidoException;
+import com.isw2.avistamientos.dominio.AvistamientoNoEncontradoException;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.web.HttpMediaTypeNotSupportedException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+
+import java.util.LinkedHashMap;
+import java.util.Map;
+
+/**
+ * Parte del adaptador web: traduce las excepciones del dominio (y las de Spring MVC)
+ * a códigos HTTP. El dominio no sabe qué es un 404; eso se decide aquí.
+ * Convierte los errores en respuestas JSON con el código de estado correcto,
+ * para que el cliente siempre reciba algo como:
+ * {&quot;status&quot;: 404, &quot;error&quot;: &quot;No encontrado&quot;, &quot;mensaje&quot;: &quot;No existe un avistamiento con id 7&quot;}
+ */
+@RestControllerAdvice
+<span class="fc" id="L25">public class ManejadorErrores {</span>
+
+    /** 400: incumplimiento de reglas de negocio propias del avistamiento. */
+    @ExceptionHandler(AvistamientoInvalidoException.class)
+    public ResponseEntity&lt;Map&lt;String, Object&gt;&gt; avistamientoInvalido(AvistamientoInvalidoException ex) {
+<span class="fc" id="L30">        return respuesta(HttpStatus.BAD_REQUEST, &quot;Datos inválidos&quot;, ex.getMessage(), ex.getCampos());</span>
+    }
+
+    /** 404: el id no existe. */
+    @ExceptionHandler(AvistamientoNoEncontradoException.class)
+    public ResponseEntity&lt;Map&lt;String, Object&gt;&gt; noEncontrado(AvistamientoNoEncontradoException ex) {
+<span class="fc" id="L36">        return respuesta(HttpStatus.NOT_FOUND, &quot;No encontrado&quot;, ex.getMessage(), null);</span>
+    }
+
+    /** 400: faltan datos o no cumplen las validaciones del modelo. */
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity&lt;Map&lt;String, Object&gt;&gt; datosInvalidos(MethodArgumentNotValidException ex) {
+<span class="fc" id="L42">        Map&lt;String, String&gt; campos = new LinkedHashMap&lt;&gt;();</span>
+<span class="fc" id="L43">        ex.getBindingResult().getFieldErrors()</span>
+<span class="fc" id="L44">                .forEach(e -&gt; campos.putIfAbsent(e.getField(), e.getDefaultMessage()));</span>
+<span class="fc" id="L45">        return respuesta(HttpStatus.BAD_REQUEST, &quot;Datos inválidos&quot;,</span>
+                &quot;Revisa los campos marcados&quot;, campos);
+    }
+
+    /** 400: el cuerpo no es un JSON válido o viene vacío. */
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity&lt;Map&lt;String, Object&gt;&gt; jsonMalFormado(HttpMessageNotReadableException ex) {
+<span class="fc" id="L52">        return respuesta(HttpStatus.BAD_REQUEST, &quot;JSON inválido&quot;,</span>
+                &quot;El cuerpo de la petición debe ser un JSON válido&quot;, null);
+    }
+
+    /** 400: el id de la URL no es un número (por ejemplo /avistamientos/abc). */
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity&lt;Map&lt;String, Object&gt;&gt; idInvalido(MethodArgumentTypeMismatchException ex) {
+<span class="fc" id="L59">        return respuesta(HttpStatus.BAD_REQUEST, &quot;Parámetro inválido&quot;,</span>
+                &quot;El id debe ser un número entero&quot;, null);
+    }
+
+    /** 415: enviaron algo que no es JSON (falta el header Content-Type: application/json). */
+    @ExceptionHandler(HttpMediaTypeNotSupportedException.class)
+    public ResponseEntity&lt;Map&lt;String, Object&gt;&gt; tipoNoSoportado(HttpMediaTypeNotSupportedException ex) {
+<span class="nc" id="L66">        return respuesta(HttpStatus.UNSUPPORTED_MEDIA_TYPE, &quot;Formato no soportado&quot;,</span>
+                &quot;Envía los datos como JSON con el header Content-Type: application/json&quot;, null);
+    }
+
+    private ResponseEntity&lt;Map&lt;String, Object&gt;&gt; respuesta(HttpStatus status, String error,
+                                                          String mensaje, Map&lt;String, String&gt; campos) {
+<span class="fc" id="L72">        Map&lt;String, Object&gt; cuerpo = new LinkedHashMap&lt;&gt;();</span>
+<span class="fc" id="L73">        cuerpo.put(&quot;status&quot;, status.value());</span>
+<span class="fc" id="L74">        cuerpo.put(&quot;error&quot;, error);</span>
+<span class="fc" id="L75">        cuerpo.put(&quot;mensaje&quot;, mensaje);</span>
+<span class="fc bfc" id="L76" title="All 2 branches covered.">        if (campos != null) {</span>
+<span class="fc" id="L77">            cuerpo.put(&quot;campos&quot;, campos);</span>
+        }
+<span class="fc" id="L79">        return ResponseEntity.status(status).body(cuerpo);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

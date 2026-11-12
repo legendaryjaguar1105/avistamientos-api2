@@ -197,18 +197,25 @@ Versión en texto, por si el visor no muestra Mermaid:
  [configuracion] ──→ Servicio, puerto de salida          ──→ depende de    ◁·· implementa
 ```
 
-**Cómo verifiqué la regla de dependencia.** Compilé `dominio/` y `aplicacion/` solos con `javac`, sin ninguna librería en el classpath, y compilan (8 clases). Si el núcleo importara algo de Spring, JPA o Jackson, no compilaría. Además, `grep "^import"` sobre esas carpetas solo muestra imports de `java.*` y del propio núcleo.
+**Cómo se comprueba la regla de dependencia.** `dominio/` y `aplicacion/` compilan solos con `javac`, sin ninguna librería en el classpath (8 clases). Si el núcleo importara algo de Spring, JPA o Jackson, no compilaría. Se puede repetir así:
+
+```powershell
+javac -d $env:TEMP\nucleo (Get-ChildItem -Recurse src\main\java\com\isw2\avistamientos\dominio, src\main\java\com\isw2\avistamientos\aplicacion -Filter *.java).FullName
+```
+
+Además, los únicos `import` de esas carpetas son de `java.*` y del propio núcleo.
 
 ### Historial de commits
 
 | Commit | Qué hace |
 |---|---|
-| `63fe411` | Estado "antes" (entrega del taller de pruebas) |
-| `Mover reglas de negocio al paquete dominio` | Validador y excepciones pasan a `dominio/`. |
-| `Agregar puertos, servicio de aplicación y adaptador JPA` | El controlador deja de usar el repositorio y habla con el puerto de entrada. |
-| `Separar el modelo de dominio de JPA y de JSON` | `Avistamiento` queda en Java puro, con una entidad JPA y DTOs web aparte. |
-| `Ubicar adaptadores de entrada según la arquitectura hexagonal` | Controlador, errores y datos de ejemplo pasan a `adaptador/entrada/`. |
-| `Documentar la arquitectura hexagonal` | README e informe. |
+| `63fe411` Subir proyecto inicial | Estado "antes" (entrega del taller de pruebas) |
+| `4eaa88c` Mover reglas de negocio al paquete dominio | Validador y excepciones pasan a `dominio/`. |
+| `ba5daa0` Agregar puertos, servicio de aplicación y adaptador JPA | El controlador deja de usar el repositorio y habla con el puerto de entrada. |
+| `56b1f8a` Separar el modelo de dominio de JPA y de JSON | `Avistamiento` queda en Java puro, con una entidad JPA y DTOs web aparte. |
+| `1d9f05a` Ubicar adaptadores de entrada según la arquitectura hexagonal | Controlador, errores y datos de ejemplo pasan a `adaptador/entrada/`. |
+| `c3859c6` Documentar la arquitectura hexagonal | README e informe. |
+| `Agregar evidencia antes y después` | Salidas de pruebas, cobertura y API en `docs/evidencia/`. |
 
 ### Cambios en las pruebas
 
@@ -219,38 +226,148 @@ Las aserciones no cambiaron. Solo cambiaron 3 líneas, todas por el movimiento d
 
 ### Evidencia antes y después del refactor
 
-Comandos usados (Windows PowerShell, desde la carpeta del proyecto):
+Todo se corrió en Windows, el 11 de noviembre de 2026, con estos comandos desde la carpeta del proyecto:
 
 ```powershell
-# ANTES
-git checkout 63fe411
-.\mvnw.cmd clean verify          # pruebas + reporte JaCoCo en target\site\jacoco\index.html
-
-# DESPUÉS
-git checkout refactor-hexagonal
-.\mvnw.cmd clean verify
-
-# Muestra de la API (en ambos momentos): levantar con .\mvnw.cmd spring-boot:run y en otra terminal
-curl.exe -i http://localhost:8080/avistamientos/1
-curl.exe -i -X POST http://localhost:8080/avistamientos -H "Content-Type: application/json" -d "@ejemplos/incompleto.json"
-curl.exe -i http://localhost:8080/avistamientos/999
+git checkout 63fe411                 # ANTES   (después: git checkout refactor-hexagonal)
+.\mvnw.cmd clean verify              # pruebas + reporte JaCoCo
+.\mvnw.cmd spring-boot:run           # y en otra terminal, los tres curl de abajo
 ```
 
-#### Antes (`63fe411`)
+Los archivos completos quedaron en [`docs/evidencia/`](evidencia/):
 
-- Salida de las pruebas: _[PEGAR: líneas `Tests run: ...` y `BUILD SUCCESS`]_
-- Reporte de cobertura: _[PEGAR: captura de `target/site/jacoco/index.html` o la fila Total]_
-- Muestra de respuesta de la API: _[PEGAR: salida de los curl]_
+- Salida de Maven: `antes-pruebas.txt` y `despues-pruebas.txt`.
+- Respuestas de la API: `antes-api.txt` y `despues-api.txt`.
+- Reportes JaCoCo navegables: `cobertura-antes/` y `cobertura-despues/`.
+- Capturas de la cobertura.
 
-#### Después (`refactor-hexagonal`)
+#### Pruebas
 
-- Salida de las pruebas: _[PEGAR]_
-- Reporte de cobertura: _[PEGAR]_
-- Muestra de respuesta de la API: _[PEGAR]_
+| | Antes (`63fe411`) | Después (`refactor-hexagonal`) |
+|---|---|---|
+| `AvistamientoControllerTest` (integración) | 18 pruebas, 0 fallas | 18 pruebas, 0 fallas |
+| `ValidadorDeAvistamientoTest` (unitarias) | 11 pruebas, 0 fallas (paquete `validation`) | 11 pruebas, 0 fallas (paquete `dominio`) |
+| **Total** | **29, Failures: 0, Errors: 0** | **29, Failures: 0, Errors: 0** |
+| Resultado | `BUILD SUCCESS` (28,8 s) | `BUILD SUCCESS` (26,1 s) |
+
+Salida de Maven, antes:
+
+```
+[INFO] Tests run: 18, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 15.43 s -- in com.isw2.avistamientos.AvistamientoControllerTest
+[INFO] Running com.isw2.avistamientos.validation.ValidadorDeAvistamientoTest
+[INFO] Tests run: 11, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.053 s -- in com.isw2.avistamientos.validation.ValidadorDeAvistamientoTest
+[INFO] Results:
+[INFO] Tests run: 29, Failures: 0, Errors: 0, Skipped: 0
+[INFO] --- jacoco:0.8.13:report (reporte-cobertura) @ avistamientos-api ---
+[INFO] Analyzed bundle 'avistamientos-api' with 9 classes
+[INFO] BUILD SUCCESS
+[INFO] Total time:  28.803 s
+```
+
+Salida de Maven, después:
+
+```
+[INFO] Tests run: 18, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 14.10 s -- in com.isw2.avistamientos.AvistamientoControllerTest
+[INFO] Running com.isw2.avistamientos.dominio.ValidadorDeAvistamientoTest
+[INFO] Tests run: 11, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.038 s -- in com.isw2.avistamientos.dominio.ValidadorDeAvistamientoTest
+[INFO] Results:
+[INFO] Tests run: 29, Failures: 0, Errors: 0, Skipped: 0
+[INFO] --- jacoco:0.8.13:report (reporte-cobertura) @ avistamientos-api ---
+[INFO] Analyzed bundle 'avistamientos-api' with 16 classes
+[INFO] BUILD SUCCESS
+[INFO] Total time:  26.075 s
+```
+
+#### Cobertura (JaCoCo)
+
+| Métrica (fila Total) | Antes | Después |
+|---|---|---|
+| Instrucciones | 84 % (73 sin cubrir de 483) | 87 % (87 sin cubrir de 716) |
+| Ramas | 76 % (7 sin cubrir de 30) | 76 % (7 sin cubrir de 30) |
+| Líneas | 95 de 105 cubiertas (90 %) | 139 de 154 cubiertas (90 %) |
+| Métodos | 38 de 42 cubiertos | 66 de 74 cubiertos |
+| Clases | 8 de 9 cubiertas | 15 de 16 cubiertas |
+
+Cobertura por paquete, después del refactor:
+
+| Paquete | Instrucciones | Ramas |
+|---|---|---|
+| `aplicacion` | 100 % | 100 % |
+| `adaptador.salida.persistencia` | 100 % | n/a |
+| `configuracion` | 100 % | n/a |
+| `dominio` | 96 % | 77 % |
+| `adaptador.entrada.web` | 92 % | 100 % |
+| `com.isw2.avistamientos` (main) | 37 % | n/a |
+| `adaptador.entrada.arranque` | 0 % | 0 % |
+
+Antes:
+
+![Cobertura antes del refactor](evidencia/captura-cobertura-antes.png)
+
+Después:
+
+![Cobertura después del refactor](evidencia/captura-cobertura-despues.png)
+
+#### Muestra de que la API responde igual
+
+Se levantó la API en los dos momentos, sobre la misma base H2 con los datos de ejemplo, y se hicieron las mismas tres peticiones. Abajo están las respuestas *después* del refactor; las de *antes* son idénticas salvo la línea `Date:` (ver `fc` más abajo).
+
+`curl.exe -i http://localhost:8080/avistamientos/1`
+
+```
+HTTP/1.1 200
+Content-Type: application/json
+
+{
+  "id" : 1,
+  "especie" : "colibrí",
+  "lugar" : "Jardín Botánico de Bogotá",
+  "fecha" : "2026-09-12",
+  "observador" : "Ana Pérez"
+}
+```
+
+`curl.exe -i -X POST http://localhost:8080/avistamientos -H "Content-Type: application/json" -d "@ejemplos/incompleto.json"`
+
+```
+HTTP/1.1 400
+Content-Type: application/json
+
+{
+  "status" : 400,
+  "error" : "Datos inválidos",
+  "mensaje" : "Revisa los campos marcados",
+  "campos" : {
+    "observador" : "El observador es obligatorio",
+    "lugar" : "El lugar es obligatorio",
+    "fecha" : "La fecha es obligatoria"
+  }
+}
+```
+
+`curl.exe -i http://localhost:8080/avistamientos/999`
+
+```
+HTTP/1.1 404
+Content-Type: application/json
+
+{
+  "status" : 404,
+  "error" : "No encontrado",
+  "mensaje" : "No existe un avistamiento con id 999"
+}
+```
+
+Nota: en la consola de Windows las tildes salen como `colibr├¡`. Es solo cómo la consola muestra el UTF-8; el JSON es el mismo en los dos momentos.
+
+Comparación automática de los dos archivos con `fc.exe docs\evidencia\antes-api.txt docs\evidencia\despues-api.txt`: las únicas diferencias que reporta son los dígitos de la hora en las tres líneas `Date:` (`01:36:13` contra `01:41:10`, y `01:36:18` contra `01:41:12`). Los códigos de estado, los headers y los cuerpos JSON son iguales.
 
 #### Comparación
 
-_[COMPLETAR después de correr: ¿mismo número de pruebas (30) y todas pasan? ¿Cómo cambió la cobertura? ¿Los curl devuelven el mismo código y el mismo JSON?]_
+- **Funcionamiento.** Pasan las mismas 29 pruebas antes y después, sin cambiar ninguna aserción. Las tres respuestas de la API son iguales byte a byte, salvo la fecha del header.
+- **Ramas: 76 % en los dos momentos (las mismas 7 de 30 sin cubrir).** Era lo esperable, porque el refactor movió las decisiones del código (las reglas del validador, el 404 y el orden validar-y-luego-buscar) pero no agregó ni quitó ninguna. Es otra señal de que la lógica es la misma.
+- **Instrucciones: de 84 % a 87 %.** Sube porque el código nuevo (puertos, servicio, DTOs y conversiones entre capas) queda ejecutado completo por las pruebas de integración. No es que haya más pruebas. El código creció de 483 a 716 instrucciones, el costo de indirección del que habla la pregunta 5.
+- **Lo que sigue sin cubrir** es lo mismo de antes: `DatosDeEjemplo`, que las pruebas apagan con `app.datos-ejemplo=false`, y el `main`. Ahora `aplicacion` y `adaptador.salida.persistencia` quedan al 100 %.
 
 ### Lo más difícil de separar y por qué
 
@@ -261,6 +378,10 @@ _[COMPLETAR después de correr: ¿mismo número de pruebas (30) y todas pasan? �
 **3. Conectar las piezas sin anotar el núcleo con Spring.** Lo cómodo habría sido poner `@Service` en `ServicioDeAvistamientos`, pero eso hace que el núcleo dependa del framework. En su lugar, `ConfiguracionHexagonal` (afuera) crea el servicio y le pasa el adaptador de salida por el constructor. Es lo mismo que hace Cockburn en su ejemplo, cuando el adaptador de entrada le entrega a la aplicación el repositorio que debe usar (Cockburn, 2005).
 
 **4. La prueba de integración conoce la base de datos.** `AvistamientoControllerTest` limpia la base con el repositorio de Spring Data. Es razonable, porque esa prueba ejercita el sistema completo, adaptadores incluidos. Pero obligó a cambiarle un import, y muestra que las pruebas de integración quedan del lado de *afuera* del hexágono.
+
+### Uso de IA
+
+Usé Claude (Anthropic) como apoyo para leer las fuentes, organizar las respuestas y hacer el refactor. Las pruebas, la cobertura y las respuestas de la API las corrí yo en mi computador; los resultados son los de esta sección.
 
 ---
 

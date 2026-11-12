@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AvistamientoEntidad.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">avistamientos-api</a> &gt; <a href="index.source.html" class="el_package">com.isw2.avistamientos.adaptador.salida.persistencia</a> &gt; <span class="el_source">AvistamientoEntidad.java</span></div><h1>AvistamientoEntidad.java</h1><pre class="source lang-java linenums">package com.isw2.avistamientos.adaptador.salida.persistencia;
+
+import com.isw2.avistamientos.dominio.Avistamiento;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+
+/**
+ * La fila de la tabla &quot;avistamientos&quot;. Es un detalle del adaptador de persistencia:
+ * el dominio nunca la ve. Conserva la misma tabla y columnas que antes del refactor,
+ * así la base H2 que ya existe sigue funcionando.
+ */
+@Entity
+@Table(name = &quot;avistamientos&quot;)
+public class AvistamientoEntidad {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(nullable = false, length = 50)
+    private String especie;
+
+    @Column(nullable = false, length = 150)
+    private String lugar;
+
+    @Column(nullable = false, length = 10)
+    private String fecha;
+
+    @Column(nullable = false, length = 100)
+    private String observador;
+
+    /** JPA necesita un constructor vacío. */
+<span class="fc" id="L37">    protected AvistamientoEntidad() {</span>
+<span class="fc" id="L38">    }</span>
+
+    static AvistamientoEntidad desdeDominio(Avistamiento a) {
+<span class="fc" id="L41">        AvistamientoEntidad e = new AvistamientoEntidad();</span>
+<span class="fc" id="L42">        e.id = a.getId();</span>
+<span class="fc" id="L43">        e.especie = a.getEspecie();</span>
+<span class="fc" id="L44">        e.lugar = a.getLugar();</span>
+<span class="fc" id="L45">        e.fecha = a.getFecha();</span>
+<span class="fc" id="L46">        e.observador = a.getObservador();</span>
+<span class="fc" id="L47">        return e;</span>
+    }
+
+    Avistamiento aDominio() {
+<span class="fc" id="L51">        return new Avistamiento(id, especie, lugar, fecha, observador);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

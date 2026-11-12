@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AvistamientoController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">avistamientos-api</a> &gt; <a href="index.source.html" class="el_package">com.isw2.avistamientos.controller</a> &gt; <span class="el_source">AvistamientoController.java</span></div><h1>AvistamientoController.java</h1><pre class="source lang-java linenums">package com.isw2.avistamientos.controller;
+
+import com.isw2.avistamientos.dto.ResumenEspecie;
+import com.isw2.avistamientos.exception.AvistamientoNoEncontradoException;
+import com.isw2.avistamientos.model.Avistamiento;
+import com.isw2.avistamientos.repository.AvistamientoRepository;
+import com.isw2.avistamientos.validation.ValidadorDeAvistamiento;
+import com.isw2.avistamientos.exception.AvistamientoInvalidoException;
+import jakarta.validation.Valid;
+import org.springframework.data.domain.Sort;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+
+import java.net.URI;
+import java.util.List;
+
+/**
+ * Los endpoints del recurso /avistamientos.
+ * La URL nombra el recurso y el método HTTP indica la acción.
+ * @RestController hace que todo lo que se retorna se convierta a JSON.
+ */
+@RestController
+@RequestMapping(&quot;/avistamientos&quot;)
+public class AvistamientoController {
+
+    private final AvistamientoRepository repositorio;
+    private final ValidadorDeAvistamiento validador;
+
+<span class="fc" id="L37">    public AvistamientoController(AvistamientoRepository repositorio) {</span>
+<span class="fc" id="L38">        this.repositorio = repositorio;</span>
+<span class="fc" id="L39">        this.validador = new ValidadorDeAvistamiento();</span>
+<span class="fc" id="L40">    }</span>
+
+    /** GET /avistamientos → 200 con la lista (vacía si no hay ninguno). */
+    @GetMapping
+    public List&lt;Avistamiento&gt; listar() {
+<span class="fc" id="L45">        return repositorio.findAll(Sort.by(&quot;id&quot;));</span>
+    }
+
+    /**
+     * GET /avistamientos/resumen → 200 con el conteo por especie (bonus).
+     * Spring prioriza esta ruta fija sobre /{id}, así que &quot;resumen&quot; no se confunde con un id.
+     */
+    @GetMapping(&quot;/resumen&quot;)
+    public List&lt;ResumenEspecie&gt; resumen() {
+<span class="fc" id="L54">        return repositorio.contarPorEspecie();</span>
+    }
+
+    /** GET /avistamientos/{id} → 200 con el avistamiento, o 404 si no existe. */
+    @GetMapping(&quot;/{id}&quot;)
+    public Avistamiento obtener(@PathVariable Long id) {
+<span class="fc" id="L60">        return repositorio.findById(id)</span>
+<span class="fc" id="L61">                .orElseThrow(() -&gt; new AvistamientoNoEncontradoException(id));</span>
+    }
+
+    /**
+     * POST /avistamientos → 201 con el avistamiento creado, o 400 si faltan datos.
+     * @Valid dispara las validaciones del modelo antes de entrar al método.
+     * Además se devuelve el header Location con la URL del nuevo recurso.
+     */
+    @PostMapping
+    public ResponseEntity&lt;Avistamiento&gt; crear(@Valid @RequestBody Avistamiento nuevo) {
+<span class="fc" id="L71">        validarReglaNegocio(nuevo);</span>
+<span class="fc" id="L72">        nuevo.setId(null); // el id siempre lo asigna la base de datos</span>
+<span class="fc" id="L73">        Avistamiento guardado = repositorio.save(nuevo);</span>
+<span class="fc" id="L74">        URI ubicacion = ServletUriComponentsBuilder.fromCurrentRequest()</span>
+<span class="fc" id="L75">                .path(&quot;/{id}&quot;)</span>
+<span class="fc" id="L76">                .buildAndExpand(guardado.getId())</span>
+<span class="fc" id="L77">                .toUri();</span>
+<span class="fc" id="L78">        return ResponseEntity.created(ubicacion).body(guardado);</span>
+    }
+
+    /** PUT /avistamientos/{id} → 200 con el avistamiento actualizado, 404 si no existe o 400 si faltan datos. */
+    @PutMapping(&quot;/{id}&quot;)
+    public Avistamiento actualizar(@PathVariable Long id, @Valid @RequestBody Avistamiento datos) {
+<span class="fc" id="L84">        validarReglaNegocio(datos);</span>
+<span class="fc" id="L85">        Avistamiento existente = repositorio.findById(id)</span>
+<span class="fc" id="L86">                .orElseThrow(() -&gt; new AvistamientoNoEncontradoException(id));</span>
+<span class="fc" id="L87">        existente.setEspecie(datos.getEspecie());</span>
+<span class="fc" id="L88">        existente.setLugar(datos.getLugar());</span>
+<span class="fc" id="L89">        existente.setFecha(datos.getFecha());</span>
+<span class="fc" id="L90">        existente.setObservador(datos.getObservador());</span>
+<span class="fc" id="L91">        return repositorio.save(existente);</span>
+    }
+
+    private void validarReglaNegocio(Avistamiento avistamiento) {
+<span class="fc" id="L95">        var errores = validador.validar(avistamiento);</span>
+<span class="fc bfc" id="L96" title="All 2 branches covered.">        if (!errores.isEmpty()) {</span>
+<span class="fc" id="L97">            throw new AvistamientoInvalidoException(errores);</span>
+        }
+<span class="fc" id="L99">    }</span>
+
+    /** DELETE /avistamientos/{id} → 204 sin cuerpo, o 404 si no existe. */
+    @DeleteMapping(&quot;/{id}&quot;)
+    public ResponseEntity&lt;Void&gt; eliminar(@PathVariable Long id) {
+<span class="fc bfc" id="L104" title="All 2 branches covered.">        if (!repositorio.existsById(id)) {</span>
+<span class="fc" id="L105">            throw new AvistamientoNoEncontradoException(id);</span>
+        }
+<span class="fc" id="L107">        repositorio.deleteById(id);</span>
+<span class="fc" id="L108">        return ResponseEntity.noContent().build();</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

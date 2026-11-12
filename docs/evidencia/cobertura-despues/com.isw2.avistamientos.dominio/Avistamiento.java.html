@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Avistamiento.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">avistamientos-api</a> &gt; <a href="index.source.html" class="el_package">com.isw2.avistamientos.dominio</a> &gt; <span class="el_source">Avistamiento.java</span></div><h1>Avistamiento.java</h1><pre class="source lang-java linenums">package com.isw2.avistamientos.dominio;
+
+/**
+ * Un avistamiento de un ave, tal como lo entiende el negocio.
+ * Es Java puro: no sabe que existe una base de datos (JPA) ni un formato JSON (Jackson).
+ * Esas traducciones las hace cada adaptador, afuera del hexágono.
+ */
+public class Avistamiento {
+
+    private Long id;
+    private String especie;
+    private String lugar;
+    /** Texto AAAA-MM-DD. */
+    private String fecha;
+    private String observador;
+
+    public Avistamiento(String especie, String lugar, String fecha, String observador) {
+<span class="fc" id="L18">        this(null, especie, lugar, fecha, observador);</span>
+<span class="fc" id="L19">    }</span>
+
+<span class="fc" id="L21">    public Avistamiento(Long id, String especie, String lugar, String fecha, String observador) {</span>
+<span class="fc" id="L22">        this.id = id;</span>
+<span class="fc" id="L23">        this.especie = especie;</span>
+<span class="fc" id="L24">        this.lugar = lugar;</span>
+<span class="fc" id="L25">        this.fecha = fecha;</span>
+<span class="fc" id="L26">        this.observador = observador;</span>
+<span class="fc" id="L27">    }</span>
+
+<span class="fc" id="L29">    public Long getId() { return id; }</span>
+<span class="fc" id="L30">    public void setId(Long id) { this.id = id; }</span>
+
+<span class="fc" id="L32">    public String getEspecie() { return especie; }</span>
+<span class="fc" id="L33">    public void setEspecie(String especie) { this.especie = especie; }</span>
+
+<span class="fc" id="L35">    public String getLugar() { return lugar; }</span>
+<span class="fc" id="L36">    public void setLugar(String lugar) { this.lugar = lugar; }</span>
+
+<span class="fc" id="L38">    public String getFecha() { return fecha; }</span>
+<span class="fc" id="L39">    public void setFecha(String fecha) { this.fecha = fecha; }</span>
+
+<span class="fc" id="L41">    public String getObservador() { return observador; }</span>
+<span class="fc" id="L42">    public void setObservador(String observador) { this.observador = observador; }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

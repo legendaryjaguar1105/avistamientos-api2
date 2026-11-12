@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ConfiguracionHexagonal.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">avistamientos-api</a> &gt; <a href="index.source.html" class="el_package">com.isw2.avistamientos.configuracion</a> &gt; <span class="el_source">ConfiguracionHexagonal.java</span></div><h1>ConfiguracionHexagonal.java</h1><pre class="source lang-java linenums">package com.isw2.avistamientos.configuracion;
+
+import com.isw2.avistamientos.aplicacion.ServicioDeAvistamientos;
+import com.isw2.avistamientos.aplicacion.puerto.entrada.GestionarAvistamientos;
+import com.isw2.avistamientos.aplicacion.puerto.salida.RepositorioDeAvistamientos;
+import com.isw2.avistamientos.dominio.ValidadorDeAvistamiento;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+/**
+ * Ensambla el hexágono: le pasa al servicio el adaptador de salida que Spring encontró.
+ * Es el único lugar donde se conectan las piezas; por eso el núcleo no necesita
+ * anotaciones de Spring (como en el ejemplo de Cockburn, donde el adaptador de
+ * entrada le entrega a la aplicación el repositorio que debe usar).
+ */
+@Configuration
+<span class="fc" id="L17">public class ConfiguracionHexagonal {</span>
+
+    @Bean
+    public GestionarAvistamientos gestionarAvistamientos(RepositorioDeAvistamientos repositorio) {
+<span class="fc" id="L21">        return new ServicioDeAvistamientos(repositorio, new ValidadorDeAvistamiento());</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

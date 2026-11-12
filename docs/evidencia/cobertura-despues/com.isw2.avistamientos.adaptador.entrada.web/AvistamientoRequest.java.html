@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AvistamientoRequest.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">avistamientos-api</a> &gt; <a href="index.source.html" class="el_package">com.isw2.avistamientos.adaptador.entrada.web</a> &gt; <span class="el_source">AvistamientoRequest.java</span></div><h1>AvistamientoRequest.java</h1><pre class="source lang-java linenums">package com.isw2.avistamientos.adaptador.entrada.web;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.isw2.avistamientos.dominio.Avistamiento;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
+
+/**
+ * El JSON que llega en POST y PUT. Las anotaciones de validación responden 400 con
+ * los mismos mensajes que antes del refactor. No tiene id: si el cliente lo envía,
+ * se ignora (ignoreUnknown).
+ */
+@JsonIgnoreProperties(ignoreUnknown = true)
+<span class="fc" id="L15">public class AvistamientoRequest {</span>
+
+    @NotBlank(message = &quot;La especie es obligatoria&quot;)
+    @Size(min = 3, max = 50, message = &quot;La especie debe tener entre 3 y 50 caracteres&quot;)
+    private String especie;
+
+    @NotBlank(message = &quot;El lugar es obligatorio&quot;)
+    @Size(max = 150, message = &quot;El lugar no puede tener más de 150 caracteres&quot;)
+    private String lugar;
+
+    @NotBlank(message = &quot;La fecha es obligatoria&quot;)
+    @Pattern(regexp = &quot;^\\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01])$&quot;,
+             message = &quot;La fecha debe tener el formato AAAA-MM-DD&quot;)
+    private String fecha;
+
+    @NotBlank(message = &quot;El observador es obligatorio&quot;)
+    @Size(max = 100, message = &quot;El observador no puede tener más de 100 caracteres&quot;)
+    private String observador;
+
+    public Avistamiento aDominio() {
+<span class="fc" id="L35">        return new Avistamiento(especie, lugar, fecha, observador);</span>
+    }
+
+<span class="nc" id="L38">    public String getEspecie() { return especie; }</span>
+<span class="fc" id="L39">    public void setEspecie(String especie) { this.especie = especie; }</span>
+
+<span class="nc" id="L41">    public String getLugar() { return lugar; }</span>
+<span class="fc" id="L42">    public void setLugar(String lugar) { this.lugar = lugar; }</span>
+
+<span class="nc" id="L44">    public String getFecha() { return fecha; }</span>
+<span class="fc" id="L45">    public void setFecha(String fecha) { this.fecha = fecha; }</span>
+
+<span class="nc" id="L47">    public String getObservador() { return observador; }</span>
+<span class="fc" id="L48">    public void setObservador(String observador) { this.observador = observador; }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

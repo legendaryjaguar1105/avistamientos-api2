@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Avistamiento.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">avistamientos-api</a> &gt; <a href="index.source.html" class="el_package">com.isw2.avistamientos.model</a> &gt; <span class="el_source">Avistamiento.java</span></div><h1>Avistamiento.java</h1><pre class="source lang-java linenums">package com.isw2.avistamientos.model;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
+
+/**
+ * El recurso principal: un avistamiento de un ave.
+ *
+ * @Entity hace que JPA lo guarde como una fila de la tabla &quot;avistamientos&quot;.
+ * Las anotaciones de validación (@NotBlank, @Pattern) son las que permiten
+ * responder 400 cuando faltan datos o vienen mal.
+ */
+@Entity
+@Table(name = &quot;avistamientos&quot;)
+public class Avistamiento {
+
+    /** Lo asigna la base de datos. READ_ONLY: sale en el JSON, pero se ignora si el cliente lo envía. */
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    private Long id;
+
+    @NotBlank(message = &quot;La especie es obligatoria&quot;)
+    @Size(min = 3, max = 50, message = &quot;La especie debe tener entre 3 y 50 caracteres&quot;)
+    @Column(nullable = false, length = 50)
+    private String especie;
+
+    @NotBlank(message = &quot;El lugar es obligatorio&quot;)
+    @Size(max = 150, message = &quot;El lugar no puede tener más de 150 caracteres&quot;)
+    @Column(nullable = false, length = 150)
+    private String lugar;
+
+    /** Se guarda como texto AAAA-MM-DD, tal como pide el enunciado. */
+    @NotBlank(message = &quot;La fecha es obligatoria&quot;)
+    @Pattern(regexp = &quot;^\\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01])$&quot;,
+             message = &quot;La fecha debe tener el formato AAAA-MM-DD&quot;)
+    @Column(nullable = false, length = 10)
+    private String fecha;
+
+    @NotBlank(message = &quot;El observador es obligatorio&quot;)
+    @Size(max = 100, message = &quot;El observador no puede tener más de 100 caracteres&quot;)
+    @Column(nullable = false, length = 100)
+    private String observador;
+
+    /** JPA necesita un constructor vacío. */
+<span class="fc" id="L54">    public Avistamiento() {</span>
+<span class="fc" id="L55">    }</span>
+
+<span class="fc" id="L57">    public Avistamiento(String especie, String lugar, String fecha, String observador) {</span>
+<span class="fc" id="L58">        this.especie = especie;</span>
+<span class="fc" id="L59">        this.lugar = lugar;</span>
+<span class="fc" id="L60">        this.fecha = fecha;</span>
+<span class="fc" id="L61">        this.observador = observador;</span>
+<span class="fc" id="L62">    }</span>
+
+<span class="fc" id="L64">    public Long getId() { return id; }</span>
+<span class="fc" id="L65">    public void setId(Long id) { this.id = id; }</span>
+
+<span class="fc" id="L67">    public String getEspecie() { return especie; }</span>
+<span class="fc" id="L68">    public void setEspecie(String especie) { this.especie = especie; }</span>
+
+<span class="fc" id="L70">    public String getLugar() { return lugar; }</span>
+<span class="fc" id="L71">    public void setLugar(String lugar) { this.lugar = lugar; }</span>
+
+<span class="fc" id="L73">    public String getFecha() { return fecha; }</span>
+<span class="fc" id="L74">    public void setFecha(String fecha) { this.fecha = fecha; }</span>
+
+<span class="fc" id="L76">    public String getObservador() { return observador; }</span>
+<span class="fc" id="L77">    public void setObservador(String observador) { this.observador = observador; }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

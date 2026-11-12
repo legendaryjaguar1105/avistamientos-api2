@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ServicioDeAvistamientos.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">avistamientos-api</a> &gt; <a href="index.source.html" class="el_package">com.isw2.avistamientos.aplicacion</a> &gt; <span class="el_source">ServicioDeAvistamientos.java</span></div><h1>ServicioDeAvistamientos.java</h1><pre class="source lang-java linenums">package com.isw2.avistamientos.aplicacion;
+
+import com.isw2.avistamientos.aplicacion.puerto.entrada.GestionarAvistamientos;
+import com.isw2.avistamientos.aplicacion.puerto.salida.RepositorioDeAvistamientos;
+import com.isw2.avistamientos.dominio.Avistamiento;
+import com.isw2.avistamientos.dominio.AvistamientoInvalidoException;
+import com.isw2.avistamientos.dominio.AvistamientoNoEncontradoException;
+import com.isw2.avistamientos.dominio.ResumenEspecie;
+import com.isw2.avistamientos.dominio.ValidadorDeAvistamiento;
+
+import java.util.List;
+import java.util.Map;
+
+/**
+ * El interior del hexágono: implementa el puerto de entrada usando el puerto de salida.
+ * No conoce Spring, ni HTTP, ni JPA; recibe sus dependencias por el constructor.
+ */
+public class ServicioDeAvistamientos implements GestionarAvistamientos {
+
+    private final RepositorioDeAvistamientos repositorio;
+    private final ValidadorDeAvistamiento validador;
+
+<span class="fc" id="L23">    public ServicioDeAvistamientos(RepositorioDeAvistamientos repositorio, ValidadorDeAvistamiento validador) {</span>
+<span class="fc" id="L24">        this.repositorio = repositorio;</span>
+<span class="fc" id="L25">        this.validador = validador;</span>
+<span class="fc" id="L26">    }</span>
+
+    @Override
+    public List&lt;Avistamiento&gt; listar() {
+<span class="fc" id="L30">        return repositorio.listarTodos();</span>
+    }
+
+    @Override
+    public List&lt;ResumenEspecie&gt; resumirPorEspecie() {
+<span class="fc" id="L35">        return repositorio.contarPorEspecie();</span>
+    }
+
+    @Override
+    public Avistamiento obtener(Long id) {
+<span class="fc" id="L40">        return repositorio.buscarPorId(id)</span>
+<span class="fc" id="L41">                .orElseThrow(() -&gt; new AvistamientoNoEncontradoException(id));</span>
+    }
+
+    @Override
+    public Avistamiento registrar(Avistamiento nuevo) {
+<span class="fc" id="L46">        validarReglasDeNegocio(nuevo);</span>
+<span class="fc" id="L47">        nuevo.setId(null); // el id siempre lo asigna quien guarda</span>
+<span class="fc" id="L48">        return repositorio.guardar(nuevo);</span>
+    }
+
+    @Override
+    public Avistamiento actualizar(Long id, Avistamiento datos) {
+<span class="fc" id="L53">        validarReglasDeNegocio(datos);</span>
+<span class="fc" id="L54">        Avistamiento existente = obtener(id);</span>
+<span class="fc" id="L55">        existente.setEspecie(datos.getEspecie());</span>
+<span class="fc" id="L56">        existente.setLugar(datos.getLugar());</span>
+<span class="fc" id="L57">        existente.setFecha(datos.getFecha());</span>
+<span class="fc" id="L58">        existente.setObservador(datos.getObservador());</span>
+<span class="fc" id="L59">        return repositorio.guardar(existente);</span>
+    }
+
+    @Override
+    public void eliminar(Long id) {
+<span class="fc bfc" id="L64" title="All 2 branches covered.">        if (!repositorio.existePorId(id)) {</span>
+<span class="fc" id="L65">            throw new AvistamientoNoEncontradoException(id);</span>
+        }
+<span class="fc" id="L67">        repositorio.eliminarPorId(id);</span>
+<span class="fc" id="L68">    }</span>
+
+    private void validarReglasDeNegocio(Avistamiento avistamiento) {
+<span class="fc" id="L71">        Map&lt;String, String&gt; errores = validador.validar(avistamiento);</span>
+<span class="fc bfc" id="L72" title="All 2 branches covered.">        if (!errores.isEmpty()) {</span>
+<span class="fc" id="L73">            throw new AvistamientoInvalidoException(errores);</span>
+        }
+<span class="fc" id="L75">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>
