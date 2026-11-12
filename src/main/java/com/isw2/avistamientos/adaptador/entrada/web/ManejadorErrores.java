@@ -1,4 +1,4 @@
-package com.isw2.avistamientos.exception;
+package com.isw2.avistamientos.adaptador.entrada.web;
 
 import com.isw2.avistamientos.dominio.AvistamientoInvalidoException;
 import com.isw2.avistamientos.dominio.AvistamientoNoEncontradoException;
@@ -15,6 +15,8 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
+ * Parte del adaptador web: traduce las excepciones del dominio (y las de Spring MVC)
+ * a códigos HTTP. El dominio no sabe qué es un 404; eso se decide aquí.
  * Convierte los errores en respuestas JSON con el código de estado correcto,
  * para que el cliente siempre reciba algo como:
  * {"status": 404, "error": "No encontrado", "mensaje": "No existe un avistamiento con id 7"}

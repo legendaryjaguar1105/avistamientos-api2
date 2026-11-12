@@ -1,4 +1,4 @@
-package com.isw2.avistamientos.controller;
+package com.isw2.avistamientos.adaptador.entrada.web;
 
 import com.isw2.avistamientos.aplicacion.puerto.entrada.GestionarAvistamientos;
 import com.isw2.avistamientos.dominio.Avistamiento;
@@ -18,6 +18,8 @@ import java.net.URI;
 import java.util.List;
 
 /**
+ * Adaptador de entrada web: traduce HTTP + JSON a llamadas al puerto GestionarAvistamientos
+ * y la respuesta del núcleo a JSON. No tiene reglas de negocio.
  * Los endpoints del recurso /avistamientos.
  * La URL nombra el recurso y el método HTTP indica la acción.
  * @RestController hace que todo lo que se retorna se convierta a JSON.

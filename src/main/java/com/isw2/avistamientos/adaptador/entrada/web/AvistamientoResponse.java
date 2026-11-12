@@ -1,4 +1,4 @@
-package com.isw2.avistamientos.controller;
+package com.isw2.avistamientos.adaptador.entrada.web;
 
 import com.isw2.avistamientos.dominio.Avistamiento;
 

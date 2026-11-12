@@ -1,4 +1,4 @@
-package com.isw2.avistamientos;
+package com.isw2.avistamientos.adaptador.entrada.arranque;
 
 import com.isw2.avistamientos.aplicacion.puerto.entrada.GestionarAvistamientos;
 import com.isw2.avistamientos.dominio.Avistamiento;
@@ -12,6 +12,9 @@ import java.util.List;
  * Carga unos avistamientos de ejemplo la primera vez que arranca la API
  * (solo si no hay ninguno), para tener algo que ver al probar.
  * Se desactiva con app.datos-ejemplo=false en application.properties.
+ *
+ * Es otro adaptador de entrada: igual que el controlador REST, maneja la aplicación
+ * a través del puerto GestionarAvistamientos (Cockburn lo llama un "batch driver").
  */
 @Component
 @ConditionalOnProperty(name = "app.datos-ejemplo", havingValue = "true", matchIfMissing = true)
