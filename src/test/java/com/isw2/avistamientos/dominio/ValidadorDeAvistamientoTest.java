@@ -1,6 +1,5 @@
 package com.isw2.avistamientos.dominio;
 
-import com.isw2.avistamientos.model.Avistamiento;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import java.time.Clock;

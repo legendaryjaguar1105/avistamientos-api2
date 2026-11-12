@@ -1,6 +1,6 @@
 package com.isw2.avistamientos;
 
-import com.isw2.avistamientos.repository.AvistamientoRepository;
+import com.isw2.avistamientos.adaptador.salida.persistencia.AvistamientoJpaRepository;
 import com.jayway.jsonpath.JsonPath;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -38,7 +38,7 @@ class AvistamientoControllerTest {
     private MockMvc mockMvc;
 
     @Autowired
-    private AvistamientoRepository repositorio;
+    private AvistamientoJpaRepository repositorio;
 
     @BeforeEach
     void limpiarBaseDeDatos() {

@@ -1,7 +1,7 @@
 package com.isw2.avistamientos.aplicacion.puerto.salida;
 
-import com.isw2.avistamientos.model.Avistamiento;
-import com.isw2.avistamientos.dto.ResumenEspecie;
+import com.isw2.avistamientos.dominio.Avistamiento;
+import com.isw2.avistamientos.dominio.ResumenEspecie;
 
 import java.util.List;
 import java.util.Optional;

@@ -2,10 +2,10 @@ package com.isw2.avistamientos.aplicacion;
 
 import com.isw2.avistamientos.aplicacion.puerto.entrada.GestionarAvistamientos;
 import com.isw2.avistamientos.aplicacion.puerto.salida.RepositorioDeAvistamientos;
-import com.isw2.avistamientos.model.Avistamiento;
+import com.isw2.avistamientos.dominio.Avistamiento;
 import com.isw2.avistamientos.dominio.AvistamientoInvalidoException;
 import com.isw2.avistamientos.dominio.AvistamientoNoEncontradoException;
-import com.isw2.avistamientos.dto.ResumenEspecie;
+import com.isw2.avistamientos.dominio.ResumenEspecie;
 import com.isw2.avistamientos.dominio.ValidadorDeAvistamiento;
 
 import java.util.List;

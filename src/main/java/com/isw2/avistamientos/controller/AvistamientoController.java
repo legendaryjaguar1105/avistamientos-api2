@@ -1,8 +1,7 @@
 package com.isw2.avistamientos.controller;
 
 import com.isw2.avistamientos.aplicacion.puerto.entrada.GestionarAvistamientos;
-import com.isw2.avistamientos.dto.ResumenEspecie;
-import com.isw2.avistamientos.model.Avistamiento;
+import com.isw2.avistamientos.dominio.Avistamiento;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -35,8 +34,8 @@ public class AvistamientoController {
 
     /** GET /avistamientos → 200 con la lista (vacía si no hay ninguno). */
     @GetMapping
-    public List<Avistamiento> listar() {
-        return avistamientos.listar();
+    public List<AvistamientoResponse> listar() {
+        return avistamientos.listar().stream().map(AvistamientoResponse::desde).toList();
     }
 
     /**
@@ -44,35 +43,35 @@ public class AvistamientoController {
      * Spring prioriza esta ruta fija sobre /{id}, así que "resumen" no se confunde con un id.
      */
     @GetMapping("/resumen")
-    public List<ResumenEspecie> resumen() {
-        return avistamientos.resumirPorEspecie();
+    public List<ResumenEspecieResponse> resumen() {
+        return avistamientos.resumirPorEspecie().stream().map(ResumenEspecieResponse::desde).toList();
     }
 
     /** GET /avistamientos/{id} → 200 con el avistamiento, o 404 si no existe. */
     @GetMapping("/{id}")
-    public Avistamiento obtener(@PathVariable Long id) {
-        return avistamientos.obtener(id);
+    public AvistamientoResponse obtener(@PathVariable Long id) {
+        return AvistamientoResponse.desde(avistamientos.obtener(id));
     }
 
     /**
      * POST /avistamientos → 201 con el avistamiento creado, o 400 si faltan datos.
-     * @Valid dispara las validaciones del modelo antes de entrar al método.
+     * @Valid dispara las validaciones de AvistamientoRequest antes de entrar al método.
      * Además se devuelve el header Location con la URL del nuevo recurso.
      */
     @PostMapping
-    public ResponseEntity<Avistamiento> crear(@Valid @RequestBody Avistamiento nuevo) {
-        Avistamiento guardado = avistamientos.registrar(nuevo);
+    public ResponseEntity<AvistamientoResponse> crear(@Valid @RequestBody AvistamientoRequest nuevo) {
+        Avistamiento guardado = avistamientos.registrar(nuevo.aDominio());
         URI ubicacion = ServletUriComponentsBuilder.fromCurrentRequest()
                 .path("/{id}")
                 .buildAndExpand(guardado.getId())
                 .toUri();
-        return ResponseEntity.created(ubicacion).body(guardado);
+        return ResponseEntity.created(ubicacion).body(AvistamientoResponse.desde(guardado));
     }
 
     /** PUT /avistamientos/{id} → 200 con el avistamiento actualizado, 404 si no existe o 400 si faltan datos. */
     @PutMapping("/{id}")
-    public Avistamiento actualizar(@PathVariable Long id, @Valid @RequestBody Avistamiento datos) {
-        return avistamientos.actualizar(id, datos);
+    public AvistamientoResponse actualizar(@PathVariable Long id, @Valid @RequestBody AvistamientoRequest datos) {
+        return AvistamientoResponse.desde(avistamientos.actualizar(id, datos.aDominio()));
     }
 
     /** DELETE /avistamientos/{id} → 204 sin cuerpo, o 404 si no existe. */

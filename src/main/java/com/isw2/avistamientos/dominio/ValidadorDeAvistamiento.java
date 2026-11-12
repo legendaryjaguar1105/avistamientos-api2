@@ -1,6 +1,5 @@
 package com.isw2.avistamientos.dominio;
 
-import com.isw2.avistamientos.model.Avistamiento;
 import java.time.Clock;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
