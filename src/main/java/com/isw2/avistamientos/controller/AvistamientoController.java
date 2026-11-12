@@ -1,13 +1,9 @@
 package com.isw2.avistamientos.controller;
 
+import com.isw2.avistamientos.aplicacion.puerto.entrada.GestionarAvistamientos;
 import com.isw2.avistamientos.dto.ResumenEspecie;
-import com.isw2.avistamientos.dominio.AvistamientoNoEncontradoException;
 import com.isw2.avistamientos.model.Avistamiento;
-import com.isw2.avistamientos.repository.AvistamientoRepository;
-import com.isw2.avistamientos.dominio.ValidadorDeAvistamiento;
-import com.isw2.avistamientos.dominio.AvistamientoInvalidoException;
 import jakarta.validation.Valid;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,18 +27,16 @@ import java.util.List;
 @RequestMapping("/avistamientos")
 public class AvistamientoController {
 
-    private final AvistamientoRepository repositorio;
-    private final ValidadorDeAvistamiento validador;
+    private final GestionarAvistamientos avistamientos;
 
-    public AvistamientoController(AvistamientoRepository repositorio) {
-        this.repositorio = repositorio;
-        this.validador = new ValidadorDeAvistamiento();
+    public AvistamientoController(GestionarAvistamientos avistamientos) {
+        this.avistamientos = avistamientos;
     }
 
     /** GET /avistamientos → 200 con la lista (vacía si no hay ninguno). */
     @GetMapping
     public List<Avistamiento> listar() {
-        return repositorio.findAll(Sort.by("id"));
+        return avistamientos.listar();
     }
 
     /**
@@ -51,14 +45,13 @@ public class AvistamientoController {
      */
     @GetMapping("/resumen")
     public List<ResumenEspecie> resumen() {
-        return repositorio.contarPorEspecie();
+        return avistamientos.resumirPorEspecie();
     }
 
     /** GET /avistamientos/{id} → 200 con el avistamiento, o 404 si no existe. */
     @GetMapping("/{id}")
     public Avistamiento obtener(@PathVariable Long id) {
-        return repositorio.findById(id)
-                .orElseThrow(() -> new AvistamientoNoEncontradoException(id));
+        return avistamientos.obtener(id);
     }
 
     /**
@@ -68,9 +61,7 @@ public class AvistamientoController {
      */
     @PostMapping
     public ResponseEntity<Avistamiento> crear(@Valid @RequestBody Avistamiento nuevo) {
-        validarReglaNegocio(nuevo);
-        nuevo.setId(null); // el id siempre lo asigna la base de datos
-        Avistamiento guardado = repositorio.save(nuevo);
+        Avistamiento guardado = avistamientos.registrar(nuevo);
         URI ubicacion = ServletUriComponentsBuilder.fromCurrentRequest()
                 .path("/{id}")
                 .buildAndExpand(guardado.getId())
@@ -81,30 +72,13 @@ public class AvistamientoController {
     /** PUT /avistamientos/{id} → 200 con el avistamiento actualizado, 404 si no existe o 400 si faltan datos. */
     @PutMapping("/{id}")
     public Avistamiento actualizar(@PathVariable Long id, @Valid @RequestBody Avistamiento datos) {
-        validarReglaNegocio(datos);
-        Avistamiento existente = repositorio.findById(id)
-                .orElseThrow(() -> new AvistamientoNoEncontradoException(id));
-        existente.setEspecie(datos.getEspecie());
-        existente.setLugar(datos.getLugar());
-        existente.setFecha(datos.getFecha());
-        existente.setObservador(datos.getObservador());
-        return repositorio.save(existente);
-    }
-
-    private void validarReglaNegocio(Avistamiento avistamiento) {
-        var errores = validador.validar(avistamiento);
-        if (!errores.isEmpty()) {
-            throw new AvistamientoInvalidoException(errores);
-        }
+        return avistamientos.actualizar(id, datos);
     }
 
     /** DELETE /avistamientos/{id} → 204 sin cuerpo, o 404 si no existe. */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminar(@PathVariable Long id) {
-        if (!repositorio.existsById(id)) {
-            throw new AvistamientoNoEncontradoException(id);
-        }
-        repositorio.deleteById(id);
+        avistamientos.eliminar(id);
         return ResponseEntity.noContent().build();
     }
 }
